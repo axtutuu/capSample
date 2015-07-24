@@ -14,7 +14,7 @@ set :default_env, {
 }
 
 # Unicorn周りの設定
-set :unicorn_rack_env, "none"
+set :unicorn_rack_env, "production"
 set :unicorn_config_path, "config/unicorn.rb"
 set :unicorn_pid, "/tmp/unicorn_kayacInternApp.pid"
 
@@ -29,25 +29,25 @@ namespace :deploy do
 
   desc 'Restart application'
   task :restart do
-    invoke 'unicorn:legacy_restart'
+    invoke 'unicorn:restart'
   end
 
   task :upload do
-    on roles(:app) do |host|
+    on roles(:app, :db) do |host|
       upload! '/Users/kawasaki-atsushi/.env', '/var/www/current/'
     end
   end
 end
+
 after 'deploy:published', 'deploy:upload'
 after 'deploy:finishing', 'deploy:restart'
 
-# デプロイ前に実行する必要がある。
-# desc 'execute before deploy'
-# task :db_create do
-#   on roles(:db) do |host|
-#     execute "mysql -uroot -e 'CREATE DATABASE IF NOT EXISTS kayacInternApp_production;'"
-#   end
-# end
+#  desc 'execute before deploy'
+#  task :db_create do
+#    on roles(:db) do |host|
+#      execute "mysql -uroot -e 'CREATE DATABASE IF NOT EXISTS kayacInternApp_production;'"
+#    end
+#  end
 
 desc 'Create Database'
 task :db_create do
